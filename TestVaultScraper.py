@@ -18,7 +18,6 @@ from pdfminer.layout import LTTextContainer # for machine-readable PDFs
 from pathlib import Path
 
 # environment setup
-os.environ["PATH"] = "/opt/homebrew/bin" + os.pathsep + os.environ.get("PATH", "")
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
 logging.basicConfig(level=logging.INFO,
     format='%(asctime)s %(levelname)s:%(message)s')
