@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+UAvenv/
+.env
+*.sqlite3
+.pydevproject
+.idea/
+.project
+
+.DS_Store
+
+*.log
+priorTests.csv
