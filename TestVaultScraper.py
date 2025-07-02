@@ -4,6 +4,7 @@ Created on May 14, 2025
 
 @author: Joel Whissel
 """
+import sys
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -20,7 +21,7 @@ from pathlib import Path
 # environment setup
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
 logging.basicConfig(level=logging.INFO,
-    format='%(asctime)s %(levelname)s:%(message)s')
+    format='%(asctime)s %(levelname)s TestVaultScraper.py: %(message)s')
 
 class Test:
     """
@@ -228,5 +229,9 @@ def list_positives(pdfs_dir):
     return p_list
 
 if __name__ == "__main__":
-    download_results("/Users/joel/Documents/SSL/LabUAs")
+    try:
+        download_results("/Users/joel/Documents/SSL/LabUAs")
+    except Exception:
+        logging.exception("Program terminated with an error")
+        sys.exit(1)
     print("TestVaultScraper is main - no email sent")
