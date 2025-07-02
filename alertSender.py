@@ -2,10 +2,16 @@
 import os
 import smtplib
 import argparse
+import logging
+import sys
 from email.message import EmailMessage
 from dotenv import load_dotenv # for SMTP username/password
 
-import TestVaultScraper           
+import TestVaultScraper
+
+# set up logging format
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s %(levelname)s alertSender.py: %(message)s')
 
 def send_email(smtp_server, port, username, password, recipient, subject, body):
     """
@@ -89,5 +95,9 @@ def main():
     print(f"Sent email to {send_to} reporting {len(new_results)} new results\n")
         
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        logging.exception("Program terminated with an error")
+        sys.exit(1)
         
