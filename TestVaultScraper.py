@@ -20,8 +20,6 @@ from pathlib import Path
 
 # environment setup
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
-logging.basicConfig(level=logging.INFO,
-    format='%(asctime)s %(levelname)s TestVaultScraper.py: %(message)s')
 
 class Test:
     """
@@ -232,6 +230,8 @@ if __name__ == "__main__":
     try:
         download_results("/Users/joel/Documents/SSL/LabUAs")
     except Exception:
-        logging.exception("Program terminated with an error")
+        logging.basicConfig(level=logging.INFO,
+                            format='%(asctime)s %(levelname)s: %(message)s')
+        logging.exception("TestVaultScraper.py terminated with an error")
         sys.exit(1)
     print("TestVaultScraper is main - no email sent")

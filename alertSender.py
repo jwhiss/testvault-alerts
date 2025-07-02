@@ -11,7 +11,7 @@ import TestVaultScraper
 
 # set up logging format
 logging.basicConfig(level=logging.INFO,
-                    format='%(asctime)s %(levelname)s alertSender.py: %(message)s')
+                    format='%(asctime)s %(levelname)s: %(message)s')
 
 def send_email(smtp_server, port, username, password, recipient, subject, body):
     """
@@ -98,6 +98,6 @@ if __name__ == "__main__":
     try:
         main()
     except Exception:
-        logging.exception("Program terminated with an error")
+        logging.exception("alertSender.py terminated with an error")
         sys.exit(1)
         
