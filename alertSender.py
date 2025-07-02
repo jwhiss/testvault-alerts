@@ -70,8 +70,7 @@ def main():
         for result in new_results:
             if result.is_positive():
                 positives.add(result)
-        
-        # send email
+
         if positives:
             subject = "New UA Results Alert - ⚠️ Positive UA"
             body += (
