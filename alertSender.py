@@ -4,6 +4,7 @@ import smtplib
 import argparse
 import logging
 import sys
+from datetime import datetime
 from email.message import EmailMessage
 from dotenv import load_dotenv # for SMTP username/password
 
@@ -37,11 +38,15 @@ def results_string(results):
     return results_str
         
 def main():
+    TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
+
     # set up and retrieve command line arguments
     parser = argparse.ArgumentParser(description="Scan UA PDFs and e-mail alerts")
     parser.add_argument("--download-dir", default="/Users/joel/Documents/SSL/LabUAs",
                         help="Folder where results directory should appear")
     args = parser.parse_args()
+    download_dir = args.download_dir
+    results_dir = f"{download_dir}/{TODAY_FORMATTED}"
     
     load_dotenv()
     
@@ -60,7 +65,7 @@ def main():
     subject = "New UA Results Alert"
     
     # download new results and store directories
-    test_dirs, new_results = TestVaultScraper.download_results(args.download_dir)
+    new_results = TestVaultScraper.download_results(download_dir)
     
     # 1) find any positives
     positives = set()
@@ -82,13 +87,13 @@ def main():
             body += (
                 "The following clients have POSITIVE UA results:\n"
                 + f"{results_string(positives)}\n"
-                + f"\nCheck {test_dirs} for details."
+                + f"\nCheck {results_dir} for details."
             )
         else:
             subject = "New UA Results Alert - All Negative"
             body += (
                 "All results are negative."
-                + f"\n\nCheck {test_dirs} for details."
+                + f"\n\nCheck {results_dir} for details."
             )
             
     send_email(smtp_server, port, username, password, send_to, subject, body)
