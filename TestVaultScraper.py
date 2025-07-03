@@ -90,6 +90,9 @@ def download_results(dates_dir):
     password = os.getenv("TESTVAULT_PASS")
     clients_url = os.getenv("CLIENTS_LIST_URL")
 
+    # set directory for PDF downloads
+    download_dir = os.path.join(dates_dir, f"{TODAY_FORMATTED}")
+
     # set up headless Chrome
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
@@ -149,8 +152,7 @@ def download_results(dates_dir):
     if not m:
         raise RuntimeError(f"No house base URL found in {clients_url}")
     base_url = m.group(1)
-    
-    modded_dirs = set() # create set for modified download directories (to check PDFs in alertSender)
+
     new_results = set() # create set for new results (Test)
     for cid, names in clients.items():
         # 1) navigate to client page
@@ -177,12 +179,8 @@ def download_results(dates_dir):
                 is_new = test_id not in prior
                 if is_new:
                     
-                    # create/access download directory
-                    download_dir = os.path.join(dates_dir, f"{TODAY_FORMATTED}")
+                    # download PDF file, new dir if none yet
                     os.makedirs(download_dir, exist_ok=True)
-                    modded_dirs.add(download_dir)
-        
-                    # 3) download it
                     pdf_path = os.path.join(download_dir, f"{names[1] + names[0][0]}"
                                             + test_date_formatted[4:10] + ".pdf")
                     resp = sess.get(pdf_url, stream=True)
@@ -211,7 +209,7 @@ def download_results(dates_dir):
     driver.quit()
     print(f"\nFinished checking {len(clients)} clients and downloaded {len(new_results)} new results\n")
     
-    return modded_dirs, new_results
+    return new_results
 
 def list_positives(pdfs_dir):
     """
