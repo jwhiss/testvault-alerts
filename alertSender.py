@@ -48,9 +48,11 @@ def main():
     download_dir = args.download_dir
     results_dir = f"{download_dir}/{TODAY_FORMATTED}"
     
-    load_dotenv()
-    
+    # download new results and store directories
+    new_results = TestVaultScraper.download_results(download_dir)
+
     # email info from .env
+    load_dotenv()
     smtp_server = "smtp.gmail.com"
     port = 465
     username = os.getenv("SMTP_USER")
@@ -63,9 +65,6 @@ def main():
         raise ValueError("Receiver e-mail is not a valid e-mail address - "
                          "check SEND_TO field in environment file")
     subject = "New UA Results Alert"
-    
-    # download new results and store directories
-    new_results = TestVaultScraper.download_results(download_dir)
     
     # 1) find any positives
     positives = set()
@@ -95,7 +94,7 @@ def main():
                 "All results are negative."
                 + f"\n\nCheck {results_dir} for details."
             )
-            
+
     send_email(smtp_server, port, username, password, send_to, subject, body)
     print(f"Sent email to {send_to} reporting {len(new_results)} new results\n")
         
