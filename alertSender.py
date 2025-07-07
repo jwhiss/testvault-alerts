@@ -51,26 +51,24 @@ def main():
     # download new results and store directories
     new_results = TestVaultScraper.download_results(download_dir)
 
-    # email info from .env
-    load_dotenv()
-    smtp_server = "smtp.gmail.com"
-    port = 465
-    username = os.getenv("SMTP_USER")
-    if "@" not in username:
-        raise ValueError("Sender e-mail is not a valid e-mail address - "
-                         "check SMTP_USER field in environment file")
-    password = os.getenv("SMTP_PASS")
-    send_to = os.getenv("SEND_TO", username)
-    if "@" not in send_to:
-        raise ValueError("Receiver e-mail is not a valid e-mail address - "
-                         "check SEND_TO field in environment file")
-    subject = "New UA Results Alert"
+    if new_results:
+        # email info from .env
+        load_dotenv()
+        smtp_server = "smtp.gmail.com"
+        port = 465
+        username = os.getenv("SMTP_USER")
+        if "@" not in username:
+            raise ValueError("Sender e-mail is not a valid e-mail address - "
+                             "check SMTP_USER field in environment file")
+        password = os.getenv("SMTP_PASS")
+        send_to = os.getenv("SEND_TO", username)
+        if "@" not in send_to:
+            raise ValueError("Receiver e-mail is not a valid e-mail address - "
+                             "check SEND_TO field in environment file")
+        subject = "New UA Results Alert"
     
-    # 1) find any positives
-    positives = set()
-    if len(new_results) == 0:
-        body = "Found 0 new results.\n"
-    else:
+        # 1) find any positives
+        positives = set()
         body = (
         f"Found {len(new_results)} new results.\n"
         + f"New results for:\n{results_string(new_results)}\n"
@@ -95,8 +93,10 @@ def main():
                 + f"\n\nCheck {results_dir} for details."
             )
 
-    send_email(smtp_server, port, username, password, send_to, subject, body)
-    print(f"Sent email to {send_to} reporting {len(new_results)} new results\n")
+        send_email(smtp_server, port, username, password, send_to, subject, body)
+        print(f"Sent email to {send_to} reporting {len(new_results)} new results\n")
+    else:
+        print(f"{len(new_results)} new results were found, no email sent\n")
         
 if __name__ == "__main__":
     try:
