@@ -27,6 +27,8 @@ To use your own chosen directory, open a Terminal window at the `MacExecutable` 
 ./testvault-alerts --download-dir /Path/to/your/directory
 ```
 
+# Manual Setup
+
 ## System Requirements
 
 Before running or building the project ensure these system packages are installed:
