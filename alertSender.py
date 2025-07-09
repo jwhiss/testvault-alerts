@@ -1,4 +1,8 @@
-#!/Users/joel/eclipse-workspace/UAScraper/UAvenv/bin/python
+"""
+Created on May 14, 2025
+
+@author: Joel Whissel
+"""
 import os
 import smtplib
 import argparse
