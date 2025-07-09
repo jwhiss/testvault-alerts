@@ -96,7 +96,7 @@ def set_config_value(key, value):
     with open(CONFIG_PATH, 'w') as f:
         json.dump({key: value}, f)
 
-def get_config_path():
+def get_appdata_path():
     """
     Returns the path to the configuration file based on standards for the current platform
     :return:
@@ -109,10 +109,10 @@ def get_config_path():
     else:  # Linux and everything else
         base = Path.home() / ".config"
 
-    return base / "testvault-alerts" / "config.json"
+    return base / "testvault-alerts"
 
 # set config file path
-CONFIG_PATH = get_config_path()
+CONFIG_PATH = get_appdata_path() / "config.json"
         
 def main():
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
@@ -124,10 +124,11 @@ def main():
 
     # setup folders
     download_dir = get_download_dir()
+    prior_tests_dir = get_appdata_path() / "priorTests.csv"
     results_dir = f"{download_dir}/{TODAY_FORMATTED}"
     
     # download new results and store directories
-    new_results = TestVaultScraper.download_results(download_dir)
+    new_results = TestVaultScraper.download_results(download_dir, prior_tests_dir)
 
     if new_results:
         # email info from .env
