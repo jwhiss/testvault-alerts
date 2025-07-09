@@ -3,11 +3,15 @@ Created on May 14, 2025
 
 @author: Joel Whissel
 """
+import json
 import os
 import smtplib
 import argparse
 import logging
 import sys
+import platform
+import tkinter as tk
+from tkinter import filedialog
 from datetime import datetime
 from email.message import EmailMessage
 from dotenv import load_dotenv # for SMTP username/password
@@ -18,6 +22,7 @@ import TestVaultScraper
 # set up logging format
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s: %(message)s')
+CONFIG_PATH = get_config_path()
 
 def send_email(smtp_server, port, username, password, recipient, subject, body):
     """
@@ -57,6 +62,33 @@ def get_download_dir():
     else:
         print("No folder selected. Using default folder.")
         return Path.home() / "Downloads"
+
+def get_saved_dir():
+    """
+    Returns the saved directory for downloads from config file, or None if none exists
+    """
+    if CONFIG_PATH.exists():
+        try:
+            with open(CONFIG_PATH, 'r') as f:
+                return json.load(f).get("download_dir")
+        except Exception:
+            pass
+    return None
+
+def get_config_path():
+    """
+    Returns the path to the configuration file based on standards for the current platform
+    :return:
+    """
+    system = platform.system()
+    if system == "Windows":
+        base = Path(os.getenv("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
+    elif system == "Darwin":  # macOS
+        base = Path.home() / "Library" / "Application Support"
+    else:  # Linux and everything else
+        base = Path.home() / ".config"
+
+    return base / "testvault-alerts" / "config.json"
         
 def main():
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
