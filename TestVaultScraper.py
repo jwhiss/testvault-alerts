@@ -76,11 +76,14 @@ class Test:
 def download_results(dates_dir):
     """Checks TestVault and downloads new results to dates_dir/TODAY"""
     # constants
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    PRIORS_CSV = os.path.join(BASE_DIR, "priorTests.csv")
+    if getattr(sys, 'frozen', False): # Running as a bundled executable
+        PRIOR_DIR = dates_dir
+    else: # Running as a script
+        PRIOR_DIR = Path(__file__).resolve().parent
+    PRIORS_CSV = os.path.join(PRIOR_DIR, "priorTests.csv")
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
     START_FORMATTED = datetime.now().strftime("%H:%M:%S")
-    
+
     print(f"{TODAY_FORMATTED} {START_FORMATTED}: Running TestVaultScraper.py")
     
     # load environment variables (TestVault user/pass)
