@@ -22,7 +22,6 @@ import TestVaultScraper
 # set up logging format
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s: %(message)s')
-CONFIG_PATH = get_config_path()
 
 def send_email(smtp_server, port, username, password, recipient, subject, body):
     """
@@ -111,6 +110,9 @@ def get_config_path():
         base = Path.home() / ".config"
 
     return base / "testvault-alerts" / "config.json"
+
+# set config file path
+CONFIG_PATH = get_config_path()
         
 def main():
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
