@@ -11,7 +11,7 @@ import logging
 import sys
 import platform
 import tkinter as tk
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from datetime import datetime
 from email.message import EmailMessage
 from dotenv import load_dotenv # for SMTP username/password
@@ -69,7 +69,11 @@ def prompt_for_download_dir():
     """
     root = tk.Tk()
     root.withdraw()
-    folder = filedialog.askdirectory(title="Choose download directory for UA results")
+    messagebox.showinfo(title="TestVault Alerts: Choose Download Folder",
+                        message="Please choose the folder where UA results should be saved. This selection will be remembered"
+                                " for future use.")
+    root.title("TestVault Alerts")
+    folder = filedialog.askdirectory(title="Choose folder for UA results")
     root.destroy()
     return folder or None
 
