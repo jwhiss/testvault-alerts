@@ -52,28 +52,39 @@ def get_download_dir():
     Returns the path of the previously saved download directory, or prompts the user to pick one and saves it
     :return: Path, home/Downloads by default
     """
-    saved = get_saved_dir()
+    saved = get_config_value("download_dir")
     if saved and Path(saved).exists():
         return saved;
     chosen = prompt_for_dir()
     if chosen:
-        save_dir(chosen)
+        set_config_value("download_dir", chosen)
         return chosen
     else:
         print("No folder selected. Using default folder.")
         return Path.home() / "Downloads"
 
-def get_saved_dir():
+def get_config_value(key):
     """
-    Returns the saved directory for downloads from config file, or None if none exists
+    Returns the value with the given key from CONFIG_PATH, or None if the pair does not exist
+    :param key: str, the key to look for
     """
     if CONFIG_PATH.exists():
         try:
             with open(CONFIG_PATH, 'r') as f:
-                return json.load(f).get("download_dir")
+                return json.load(f).get(key)
         except Exception:
             pass
     return None
+
+def set_config_value(key, value):
+    """
+    Sets the given key to the given value in CONFIG_PATH
+    :param key: str, key to set in CONFIG_PATH
+    :param value: str, value to be matched with the given key
+    """
+    CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with open(CONFIG_PATH, 'w') as f:
+        json.dump({key: value}, f)
 
 def get_config_path():
     """
