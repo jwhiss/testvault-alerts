@@ -3,7 +3,8 @@
 This repository scrapes drug test results from TestVault and can alert via email when new results are available, including
 a list of clients for whom one or more individual drugs were present. It relies on Selenium, OCR utilities and other third‑party tools.
 
-"Main" is currently not set up for deployment on most devices. Using this branch will require some modifications.
+**"Main" is currently not set up for deployment on most devices. Using this branch will require some modifications. 
+use the "deployment" branch instead**
 
 ## System Requirements
 
@@ -38,12 +39,11 @@ On Windows, download and install the Tesseract, Poppler and Chrome/ChromeDriver 
 ## Running The Program
 By design, alertSender.py should be run for full functionality. 
 
-If run individually, TestVaultScraper.py scrapes TestVault for new results and downloads any new results to your Downloads
-folder. 
+If run individually, TestVaultScraper.py scrapes TestVault for new results and downloads any new results to **an incorrect folder**
 
 alertSender.py takes one command line argument `--download-dir` with the full path to the directory you would like new tests
 to appear in. This directory will also include priorTests.csv (see below), which should not be altered. By default, the
-download directory is "Downloads". 
+download directory is **incorrect**
 
 When alertSender.py is run, it completes the scrape-and-download process from TestVaultScraper.py, with the download directory
 set by command line argument, then checks each PDF for positive results. It then sends an email from SMTP_USER to SEND_TO 
