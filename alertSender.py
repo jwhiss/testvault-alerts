@@ -55,13 +55,24 @@ def get_download_dir():
     saved = get_config_value("download_dir")
     if saved and Path(saved).exists():
         return saved;
-    chosen = prompt_for_dir()
+    chosen = prompt_for_download_dir()
     if chosen:
         set_config_value("download_dir", chosen)
         return chosen
     else:
         print("No folder selected. Using default folder.")
         return Path.home() / "Downloads"
+
+def prompt_for_download_dir():
+    """
+    Prompts the user to select a download directory and returns it
+    :return: the selected directory
+    """
+    root = tk.Tk()
+    root.withdraw()
+    folder = filedialog.askdirectory(title="Choose download directory for UA results")
+    root.destroy()
+    return folder or None
 
 def get_config_value(key):
     """
