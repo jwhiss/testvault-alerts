@@ -228,7 +228,7 @@ def list_positives(pdfs_dir):
 
 if __name__ == "__main__":
     try:
-        download_results("/Users/joel/Documents/SSL/LabUAs")
+        download_results(Path.home() / "Downloads")
     except Exception:
         logging.basicConfig(level=logging.INFO,
                             format='%(asctime)s %(levelname)s: %(message)s')
