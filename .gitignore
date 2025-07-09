@@ -11,3 +11,8 @@ UAvenv/
 
 *.log
 priorTests.csv
+
+.pyc
+build/
+dist/
+*.spec
