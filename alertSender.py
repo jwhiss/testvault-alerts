@@ -41,6 +41,22 @@ def results_string(results):
     for result in results:
         results_str += f"{result.client} on {result.collection_date}\n"
     return results_str
+
+def get_download_dir():
+    """
+    Returns the path of the previously saved download directory, or prompts the user to pick one and saves it
+    :return: Path, home/Downloads by default
+    """
+    saved = get_saved_dir()
+    if saved and Path(saved).exists():
+        return saved;
+    chosen = prompt_for_dir()
+    if chosen:
+        save_dir(chosen)
+        return chosen
+    else:
+        print("No folder selected. Using default folder.")
+        return Path.home() / "Downloads"
         
 def main():
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
