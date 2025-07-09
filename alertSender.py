@@ -11,6 +11,7 @@ import sys
 from datetime import datetime
 from email.message import EmailMessage
 from dotenv import load_dotenv # for SMTP username/password
+from pathlib import Path
 
 import TestVaultScraper
 
@@ -43,10 +44,11 @@ def results_string(results):
         
 def main():
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
+    default_download_dir = Path.home() / "Downloads"
 
     # set up and retrieve command line arguments
     parser = argparse.ArgumentParser(description="Scan UA PDFs and e-mail alerts")
-    parser.add_argument("--download-dir", default="/Users/joel/Documents/SSL/LabUAs",
+    parser.add_argument("--download-dir", default=default_download_dir,
                         help="Folder where results directory should appear")
     args = parser.parse_args()
     download_dir = args.download_dir
