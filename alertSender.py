@@ -124,11 +124,10 @@ def main():
 
     # setup folders
     download_dir = get_download_dir()
-    prior_tests_dir = get_appdata_path() / "priorTests.csv"
     results_dir = f"{download_dir}/{TODAY_FORMATTED}"
     
     # download new results and store directories
-    new_results = TestVaultScraper.download_results(download_dir, prior_tests_dir)
+    new_results = TestVaultScraper.download_results(download_dir, get_appdata_path())
 
     if new_results:
         # email info from .env
