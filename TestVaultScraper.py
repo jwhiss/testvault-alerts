@@ -73,14 +73,10 @@ class Test:
             print(f"{method} — No “{keyword}” in {os.path.basename(self.pdf_path)}")
         return found
 
-def download_results(dates_dir):
+def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
     """Checks TestVault and downloads new results to dates_dir/TODAY"""
     # constants
-    if getattr(sys, 'frozen', False): # Running as a bundled executable
-        PRIOR_DIR = dates_dir
-    else: # Running as a script
-        PRIOR_DIR = Path(__file__).resolve().parent
-    PRIORS_CSV = os.path.join(PRIOR_DIR, "priorTests.csv")
+    PRIORS_CSV = os.path.join(data_dir, "priorTests.csv")
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
     START_FORMATTED = datetime.now().strftime("%H:%M:%S")
 
