@@ -114,14 +114,14 @@ def get_config_path():
         
 def main():
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
-    default_download_dir = Path.home() / "Downloads"
 
     # set up and retrieve command line arguments
     parser = argparse.ArgumentParser(description="Scan UA PDFs and e-mail alerts")
-    parser.add_argument("--download-dir", default=default_download_dir,
-                        help="Folder where results directory should appear")
+    parser.add_argument("--reset-config", action="store_true", help="Reset saved download directory")
     args = parser.parse_args()
-    download_dir = args.download_dir
+
+    # setup folders
+    download_dir = get_download_dir()
     results_dir = f"{download_dir}/{TODAY_FORMATTED}"
     
     # download new results and store directories
