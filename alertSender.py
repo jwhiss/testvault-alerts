@@ -1,4 +1,3 @@
-#!/Users/joel/eclipse-workspace/UAScraper/.UAvenv/bin/python
 """
 Created on May 14, 2025
 
