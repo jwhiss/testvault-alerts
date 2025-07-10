@@ -6,7 +6,7 @@ TESTVAULT_USER=your_email@gmail.com
 TESTVAULT_PASS=your_testvault_password
 
 # the URl in testvault after you click "Groups", then your house
-CLIENTS_LIST_URL=https://achievewholerecovery.thetestvault.com/crm/company/YOUR_NUMBER_HERE/person/list/
+CLIENTS_LIST_URL=https://COMPANY.thetestvault.com/crm/company/ORG_NUMBER/person/list/
 
 # optional email to send results to
 SEND_TO=to_email@example.com
