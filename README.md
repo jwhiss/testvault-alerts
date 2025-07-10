@@ -3,7 +3,7 @@
 This repository scrapes drug test results from TestVault and can alert via email when new results are available, including
 a list of clients for whom one or more individual drugs were present. It relies on Selenium, OCR utilities and other third‑party tools.
 
-**"Main" is currently not set up for deployment on most devices. Using this branch will require some modifications. 
+**"Pre-deployment" is not set up for deployment on most devices. Using this branch will require some modifications. 
 use the "deployment" branch instead**
 
 ## System Requirements
