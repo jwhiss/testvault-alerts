@@ -137,13 +137,6 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
         clients.setdefault(cid, []).append(text)
     
     print("Found client IDs:", clients)
-    try:
-        clients.pop("16009138") #remove Trenk
-        clients.pop("16009139") #remove Joel
-        clients.pop("16030453") #remove Kyle
-        clients.pop("16030456") #remove Louie
-    except KeyError:
-        pass
     
     # Load what’s already been downloaded
     prior = set()
