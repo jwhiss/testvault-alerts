@@ -120,7 +120,12 @@ def get_appdata_path():
 CONFIG_PATH = get_appdata_path() / "config.json"
         
 def main():
+    # constants
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
+    if getattr(sys, 'frozen', False): # Running as a bundled .exe
+        BASE_DIR = Path(sys.executable).resolve().parent
+    else: # Running as a .py script
+        BASE_DIR = Path(__file__).resolve().parent
 
     # set up and retrieve command line arguments
     parser = argparse.ArgumentParser(description="Scan UA PDFs and e-mail alerts")
@@ -136,7 +141,7 @@ def main():
 
     if new_results:
         # email info from .env
-        load_dotenv()
+        load_dotenv(BASE_DIR / ".env")
         smtp_server = "smtp.gmail.com"
         port = 465
         username = os.getenv("SMTP_USER")

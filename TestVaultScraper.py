@@ -79,11 +79,15 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
     PRIORS_CSV = os.path.join(data_dir, "priorTests.csv")
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
     START_FORMATTED = datetime.now().strftime("%H:%M:%S")
+    if getattr(sys, 'frozen', False): # Running as a bundled .exe
+        BASE_DIR = Path(sys.executable).resolve().parent
+    else: # Running as a .py script
+        BASE_DIR = Path(__file__).resolve().parent
 
     print(f"{TODAY_FORMATTED} {START_FORMATTED}: Running TestVaultScraper.py")
     
     # load environment variables (TestVault user/pass)
-    load_dotenv()
+    load_dotenv(dotenv_path=BASE_DIR / ".env")
     username = os.getenv("TESTVAULT_USER")
     password = os.getenv("TESTVAULT_PASS")
     clients_url = os.getenv("CLIENTS_LIST_URL")
