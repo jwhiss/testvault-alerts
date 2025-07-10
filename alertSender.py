@@ -141,7 +141,7 @@ def main():
 
     if new_results:
         # email info from .env
-        load_dotenv(BASE_DIR / ".env")
+        load_dotenv(BASE_DIR / "environment.txt")
         smtp_server = "smtp.gmail.com"
         port = 465
         username = os.getenv("SMTP_USER")

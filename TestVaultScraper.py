@@ -87,7 +87,7 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
     print(f"{TODAY_FORMATTED} {START_FORMATTED}: Running TestVaultScraper.py")
     
     # load environment variables (TestVault user/pass)
-    load_dotenv(dotenv_path=BASE_DIR / ".env")
+    load_dotenv(dotenv_path=BASE_DIR / "environment.txt")
     username = os.getenv("TESTVAULT_USER")
     password = os.getenv("TESTVAULT_PASS")
     clients_url = os.getenv("CLIENTS_LIST_URL")
