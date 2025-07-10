@@ -87,6 +87,8 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
     username = os.getenv("TESTVAULT_USER")
     password = os.getenv("TESTVAULT_PASS")
     clients_url = os.getenv("CLIENTS_LIST_URL")
+    if not (username and password and clients_url):
+        raise RuntimeError("TestVault fields in .env must not be empty")
 
     # set directory for PDF downloads
     download_dir = os.path.join(dates_dir, f"{TODAY_FORMATTED}")
