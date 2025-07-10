@@ -2,6 +2,7 @@ __pycache__/
 *.py[cod]
 UAvenv/
 .env
+environment.txt
 *.sqlite3
 .pydevproject
 .idea/
@@ -11,3 +12,7 @@ UAvenv/
 
 *.log
 priorTests.csv
+
+testvault-alerts.spec
+dist/
+build/
