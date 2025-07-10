@@ -150,7 +150,7 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
     # determine base URL for client-documents pages
     m = re.search(r"(.*)/list/$", clients_url)
     if not m:
-        raise RuntimeError(f"No house base URL found in {clients_url}")
+        raise RuntimeError(f"No base URL found in {clients_url}")
     base_url = m.group(1)
 
     new_results = set() # create set for new results (Test)
