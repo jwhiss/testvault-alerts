@@ -14,7 +14,7 @@ Download `MacExecutable.zip` from this repository and unzip it. A `testvault-ale
 will appear containing the `testvault-alert-sender` executable and an
 `environment.txt.template` file.
 
-1. Inside `dist` copy `environment.txt.template` to `environment.txt` and edit
+1. Inside `testvault-alerts` copy `environment.txt.template` to `environment.txt` and edit
    it with your SMTP and TestVault credentials (see the "Environment Setup" section below for more information):
    ```bash
    cp environment.txt.template environment.txt
