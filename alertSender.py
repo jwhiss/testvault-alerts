@@ -131,6 +131,9 @@ def main():
     parser.add_argument("--reset-config", action="store_true", help="Reset saved download directory")
     args = parser.parse_args()
 
+    if args.reset_config:
+        set_config_value("download_dir", "")
+
     # setup folders
     download_dir = get_download_dir()
     results_dir = f"{download_dir}/{TODAY_FORMATTED}"
