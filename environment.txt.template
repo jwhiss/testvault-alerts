@@ -1,4 +1,4 @@
-# A file with this format should be saved as ".env" in the same directory as the program
+# A file with this format should be saved as "environment.txt" in the same directory as the program
 SMTP_USER=your_email@gmail.com
 SMTP_PASS=non_2FA_password
 

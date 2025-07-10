@@ -7,25 +7,18 @@ This branch is set up for deployment on MacOS and Windows devices.
 
 # Plug-and-Play Setup
 ## MacOS
-On this GitHub page, find the file titled `MacExecutable.zip` and download it. Double click to unzip it, then follow the
-directions under the heading "Environment Setup" on this page. 
+Download `MacExecutable.zip` from this repository and unzip it. A `dist` folder
+will appear containing the `testvault-alerts` executable and an
+`environment.txt.template` file.
 
-Once your `.env` file is set up, decide where you'd like PDF test results to be downloaded. Downloading PDFs for each test
-is necessary in order for the program to check for positive results, but if you don't want to keep these PDFs feel free to
-delete them after running the program. Within the directory you choose, testvault-alerts will create a folder for each date
-on which tests are downloaded, so I'd recommend creating a new directory to store these folders. The default location is 
-the Downloads directory. 
-
-If you choose not to use the default directory, copy the full path of the chosen directory: right click on the directory 
--> Get Info -> right click next to "Where: " -> Copy as Pathname.
-
-Now you're ready to run testvault-alerts. To use the default directory, double click `testvault-alerts`. 
-
-To use your own chosen directory, open a Terminal window at the `MacExecutable` directory: right click on the directory 
--> Services -> New Terminal at Folder. Then use the following command, pasting your copied folder path instead of the placeholder: 
-```bash
-./testvault-alerts --download-dir /Path/to/your/directory
-```
+1. Inside `dist` copy `environment.txt.template` to `environment.txt` and edit
+   it with your SMTP and TestVault credentials:
+   ```bash
+   cp environment.txt.template environment.txt
+   ```
+2. Double click `testvault-alerts` to run. On first launch a file picker will
+   ask where downloaded PDFs should be saved. The location is remembered for
+   future runs. Use the `--reset-config` flag to choose a new folder.
 
 # Manual Setup
 
@@ -49,11 +42,12 @@ On Windows, download and install the Tesseract, Poppler and Chrome/ChromeDriver 
 
 ## Environment Setup
 
-1. Copy `env.template` to `.env` in the repository root (or the file that holds the executable):
+1. Copy `environment.txt.template` to `environment.txt` in the repository root
+   (or the folder with the executable):
    ```bash
-   cp env.template .env
+   cp environment.txt.template environment.txt
    ```
-2. Edit `.env` and fill in the SMTP and TestVault credentials:
+2. Edit `environment.txt` and fill in the SMTP and TestVault credentials:
    - `SMTP_USER` and `SMTP_PASS` – email account used to send notifications. 
      - The password must not be one that is set up for two-factor authentication, so you'll likely need to create an 
 "app password" through your email provider.
@@ -69,13 +63,13 @@ By design, alertSender.py should be run for full functionality.
 If run individually, TestVaultScraper.py scrapes TestVault for new results and downloads any new results to your Downloads
 folder.
 
-alertSender.py takes one command line argument `--download-dir` with the full path to the directory you would like new tests
-to appear in. This directory will also include priorTests.csv (see below), which should not be altered. By default, the
-download directory is "Downloads".
+alertSender.py remembers the download folder you pick the first time it runs.
+Use the `--reset-config` flag to choose a new folder. The directory you select
+will also contain `priorTests.csv` (see below), which should not be altered.
 
-When alertSender.py is run, it completes the scrape-and-download process from TestVaultScraper.py, with the download directory
-set by command line argument, then checks each PDF for positive results. It then sends an email from SMTP_USER to SEND_TO
-with the number of new results and a list of any clients whose tests were positive for one or more individual drugs.
+When alertSender.py is run it downloads new results, checks each PDF for positive
+results and then emails SEND_TO with a summary of any clients whose tests were
+positive for one or more drugs.
 
 ### Automatic Scheduling
 I suggest using launchd (on MacOS) or Task Scheduler (on Windows) to run alertSender.py at scheduled times or intervals.

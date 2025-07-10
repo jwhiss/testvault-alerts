@@ -6,6 +6,8 @@ Created on May 14, 2025
 import os
 import smtplib
 import argparse
+import tkinter as tk
+from tkinter import filedialog
 import logging
 import sys
 from datetime import datetime
@@ -46,20 +48,35 @@ def main():
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
     default_download_dir = Path.home() / "Downloads"
 
+    CONFIG_FILE = Path.home() / ".testvault_download_dir"
+
     # set up and retrieve command line arguments
     parser = argparse.ArgumentParser(description="Scan UA PDFs and e-mail alerts")
-    parser.add_argument("--download-dir", default=default_download_dir,
-                        help="Folder where results directory should appear")
+    parser.add_argument(
+        "--reset-config",
+        action="store_true",
+        help="Choose a new folder for saving downloaded PDFs",
+    )
     args = parser.parse_args()
-    download_dir = args.download_dir
+
+    if args.reset_config or not CONFIG_FILE.exists():
+        root = tk.Tk()
+        root.withdraw()
+        selected = filedialog.askdirectory(title="Where should downloaded PDFs be saved?")
+        root.destroy()
+        download_dir = Path(selected) if selected else default_download_dir
+        CONFIG_FILE.write_text(str(download_dir))
+    else:
+        download_dir = Path(CONFIG_FILE.read_text().strip())
+
     results_dir = f"{download_dir}/{TODAY_FORMATTED}"
     
     # download new results and store directories
     new_results = TestVaultScraper.download_results(download_dir)
 
     if new_results:
-        # email info from .env
-        load_dotenv()
+        # email info from environment.txt
+        load_dotenv("environment.txt")
         smtp_server = "smtp.gmail.com"
         port = 465
         username = os.getenv("SMTP_USER")

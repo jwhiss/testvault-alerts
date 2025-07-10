@@ -1,7 +1,7 @@
 __pycache__/
 *.py[cod]
 UAvenv/
-.env
+environment.txt
 *.sqlite3
 .pydevproject
 .idea/
