@@ -1,3 +1,4 @@
+#!/Users/joel/eclipse-workspace/UAScraper/.UAvenv/bin/python
 """
 Created on May 14, 2025
 
@@ -53,7 +54,7 @@ def get_download_dir():
     """
     saved = get_config_value("download_dir")
     if saved and Path(saved).exists():
-        return saved;
+        return saved
     chosen = prompt_for_download_dir()
     if chosen:
         set_config_value("download_dir", chosen)
