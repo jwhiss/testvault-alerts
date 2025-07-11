@@ -83,8 +83,8 @@ def prompt_for_download_dir():
     root = tk.Tk()
     root.withdraw()
     messagebox.showinfo(title="TestVault Alerts: Choose Download Folder",
-                        message="Please choose the folder where UA results should be saved. This selection will be remembered"
-                                " for future use.")
+                        message="Please choose the folder where UA results should be saved. "
+                                "This selection will be remembered for future sessions.")
     root.title("TestVault Alerts")
     folder = filedialog.askdirectory(title="Choose folder for UA results")
     root.destroy()
@@ -95,21 +95,23 @@ def prompt_for_credentials():
     """Show a Tkinter form asking for required credentials."""
     root = tk.Tk()
     root.title("TestVault Alerts Setup")
-    subtitle = tk.Label(root, text="Credentials are stored on your device and only sent to TestVault and SMTP servers.")
+    subtitle = tk.Label(root, text="Credentials are stored on your device and only sent to "
+                                   "TestVault and SMTP servers.\nFields marked with '*' are required. "
+                                   "SMTP (email login) fields are necessary for alert functions.")
     subtitle.grid(row=0, columnspan=2, padx=5, pady=2, sticky="e")
     fields = [
-        ("Send-from Email", "smtp_user"),
-        ("Send-from Password", "smtp_pass"),
-        ("TestVault Email", "testvault_user"),
-        ("TestVault Password", "testvault_pass"),
-        ("Clients List URL", "clients_list_url"),
+        ("TestVault Email *", "testvault_user"),
+        ("TestVault Password *", "testvault_pass"),
+        ("Clients List URL *", "clients_list_url"),
+        ("SMTP Email", "smtp_user"),
+        ("SMTP Password", "smtp_pass"),
     ]
     entries = {}
     for i, (label, key) in enumerate(fields):
-        tk.Label(root, text=label).grid(row=i+1, column=0, padx=5, pady=2, sticky="e")
+        tk.Label(root, text=label).grid(row=i+2, column=0, padx=5, pady=2, sticky="e")
         show = "*" if "Password" in label else None
         entry = tk.Entry(root, width=40, show=show)
-        entry.grid(row=i+1, column=1, padx=5, pady=2)
+        entry.grid(row=i+2, column=1, padx=5, pady=2)
         entries[key] = entry
 
     def submit():
@@ -117,7 +119,7 @@ def prompt_for_credentials():
             set_config_value(k, e.get().strip())
         root.destroy()
 
-    tk.Button(root, text="Save", command=submit).grid(row=len(fields)+1, column=0, columnspan=2, pady=10)
+    tk.Button(root, text="Save", command=submit).grid(row=len(fields)+2, column=0, columnspan=2, pady=10)
     root.mainloop()
 
 
