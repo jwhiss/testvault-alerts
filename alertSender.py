@@ -36,6 +36,25 @@ import TestVaultScraper
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s: %(message)s')
 
+def create_email(new_results, positives, results_dir):
+    body = (f"Found {len(new_results)} new results.\n"
+            + f"New results for:\n{results_string(new_results)}\n")
+
+    if positives:
+        subject = "New UA Results Alert - ⚠️ Positive UA"
+        body += (
+                "The following clients have POSITIVE UA results:\n"
+                + f"{results_string(positives)}\n"
+                + f"\nCheck {results_dir} for details."
+        )
+    else:
+        subject = "New UA Results Alert - All Negative"
+        body += (
+                "All results are negative."
+                + f"\n\nCheck {results_dir} for details."
+        )
+    return subject, body
+
 def send_email(smtp_server, port, username, password, recipient, subject, body):
     """
     Sends an email with the specified arguments
@@ -142,7 +161,6 @@ def get_credentials():
         prompt_for_credentials()
     return read_config()
 
-        
 def main():
     # constants
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
@@ -164,43 +182,27 @@ def main():
     new_results = TestVaultScraper.download_results(download_dir, get_appdata_path())
 
     if new_results:
-        smtp_server = "smtp.gmail.com"
-        port = 465
-        username = creds.get("smtp_user")
-        if "@" not in username: #TODO allow use without email
-            raise ValueError("Sender e-mail is not a valid e-mail address")
-        password = creds.get("smtp_pass")
-        send_to = username
-        subject = "New UA Results Alert"
-    
-        # 1) find any positives
-        positives = set()
-        body = (
-        f"Found {len(new_results)} new results.\n"
-        + f"New results for:\n{results_string(new_results)}\n"
-        )
-        
         # check for PDFs with positive results
+        positives = set()
         for result in new_results:
             if result.is_positive():
                 positives.add(result)
 
-        if positives:
-            subject = "New UA Results Alert - ⚠️ Positive UA"
-            body += (
-                "The following clients have POSITIVE UA results:\n"
-                + f"{results_string(positives)}\n"
-                + f"\nCheck {results_dir} for details."
-            )
-        else:
-            subject = "New UA Results Alert - All Negative"
-            body += (
-                "All results are negative."
-                + f"\n\nCheck {results_dir} for details."
-            )
 
-        send_email(smtp_server, port, username, password, send_to, subject, body)
-        print(f"Sent email to {send_to} reporting {len(new_results)} new results\n")
+        if creds.get("smtp_user") and creds.get("smtp_pass"):
+            smtp_server = "smtp.gmail.com"
+            port = 465
+            username = creds.get("smtp_user")
+            if "@" not in username:
+                raise ValueError("Sender e-mail is not a valid e-mail address")
+            password = creds.get("smtp_pass")
+            send_to = username
+            subject, body = create_email(new_results, positives, results_dir)
+
+            send_email(smtp_server, port, username, password, send_to, subject, body)
+            print(f"Sent email to {send_to} reporting {len(new_results)} new results\n")
+        else:
+            print("No SMTP credentials provided, no email sent\n")
     else:
         print(f"{len(new_results)} new results were found, no email sent\n")
         
