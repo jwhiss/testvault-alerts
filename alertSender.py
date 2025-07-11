@@ -205,6 +205,11 @@ def main():
             print("No SMTP credentials provided, no email sent\n")
     else:
         print(f"{len(new_results)} new results were found, no email sent\n")
+
+    if not creds.get("remember"):
+        to_forget = ["testvault_user", "testvault_pass", "clients_list_url", "smtp_user", "smtp_pass"]
+        for k in to_forget:
+            set_config_value(k, "")
         
 if __name__ == "__main__":
     try:
