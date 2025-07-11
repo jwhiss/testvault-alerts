@@ -136,10 +136,6 @@ def get_credentials():
 def main():
     # constants
     TODAY_FORMATTED = datetime.today().strftime("%Y-%m-%d")
-    if getattr(sys, 'frozen', False): # Running as a bundled .exe
-        BASE_DIR = Path(sys.executable).resolve().parent
-    else: # Running as a .py script
-        BASE_DIR = Path(__file__).resolve().parent
 
     # set up and retrieve command line arguments
     parser = argparse.ArgumentParser(description="Scan UA PDFs and e-mail alerts")
