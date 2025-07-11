@@ -19,7 +19,7 @@ def get_appdata_path():
 CONFIG_PATH = get_appdata_path() / "config.json"
 
 
-def _read_config():
+def read_config():
     try:
         with open(CONFIG_PATH, "r") as f:
             return json.load(f)
@@ -35,7 +35,7 @@ def _write_config(data: dict):
 
 def get_config_value(key: str):
     """Returns the value with the given key from CONFIG_PATH, or default if the key does not exist"""
-    return _read_config().get(key)
+    return read_config().get(key)
 
 
 def set_config_value(key: str, value):
