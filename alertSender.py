@@ -28,7 +28,7 @@ from pathlib import Path
 from config import (
     get_appdata_path,
     get_config_value,
-    set_config_value,
+    set_config_value, CONFIG_PATH,
 )
 
 import TestVaultScraper
@@ -143,7 +143,7 @@ def main():
     args = parser.parse_args()
 
     if args.reset_config:
-        set_config_value("download_dir", "")
+        CONFIG_PATH.unlink()
 
     # setup folders
     download_dir = get_download_dir()
