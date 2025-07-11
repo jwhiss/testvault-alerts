@@ -44,7 +44,7 @@ def set_config_value(key: str, value):
     :param key: str, key to set in CONFIG_PATH
     :param value: str, value to be matched with the given key
     """
-    data = _read_config()
+    data = read_config()
     data[key] = value
     _write_config(data)
 
