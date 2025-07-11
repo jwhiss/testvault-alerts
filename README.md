@@ -11,34 +11,20 @@ regularly (see "Automatic Scheduling" below), each run will take less than a min
 # Plug-and-Play Setup
 ## MacOS
 Download `MacExecutable.zip` from this repository and unzip it. A `testvault-alerts` folder
-will appear containing the `testvault-alert-sender` executable and an
-`environment.txt.template` file.
+will appear containing the `testvault-alert-sender` executable.
 
-1. Inside `testvault-alerts` copy `environment.txt.template` to `environment.txt` and edit
-   it with your SMTP and TestVault credentials (see the "Environment Setup" section below for more information):
-   ```bash
-   cp environment.txt.template environment.txt
-   ```
-2. Double click `testvault-alert-sender` to run. On first launch a file picker will
-   ask where downloaded PDFs should be saved. The location is remembered for
+1. Double click `testvault-alert-sender` to run. On first launch a window will ask for
+   your SMTP credentials, TestVault credentials and the clients list URL. The values are saved
+   to `config.json` in your user configuration directory.
+2. A file picker will then ask where downloaded PDFs should be saved. The location is remembered for
    future runs. Run the executable from the command line with the `--reset-config` flag to choose a new folder.
 
-# Environment Setup
+# Configuration
 
-1. Copy `environment.txt.template` to `environment.txt` in the repository root
-   (or the folder with the executable):
-   ```bash
-   cp environment.txt.template environment.txt
-   ```
-2. Edit `environment.txt` and fill in the SMTP and TestVault credentials:
-    - `SMTP_USER` and `SMTP_PASS` – email account used to send notifications.
-        - The password must not be one that is set up for two-factor authentication, so you'll likely need to create an
-          "app password" through your email provider.
-    - `TESTVAULT_USER` and `TESTVAULT_PASS` – TestVault login credentials.
-    - `CLIENTS_LIST_URL` – your house's client list page URL in TestVault.
-        - To get this URL, log in to TestVault, click on "Groups" and then click on the link to your house. Then copy your
-          browser's current URL.
-    - Optional `SEND_TO` – email address that should receive the alerts.
+On first launch a small window requests your SMTP email, SMTP password, TestVault email,
+TestVault password and the clients list URL. These values are saved to `config.json` in a
+platform‑appropriate configuration directory. Delete or edit this file if you need to update
+the credentials later.
 
 
 # Manual Setup
@@ -71,7 +57,7 @@ alertSender.py remembers the download folder you pick the first time it runs.
 Use the `--reset-config` flag to choose a new folder. 
 
 When alertSender.py is run it downloads new results, checks each PDF for positive
-results and then emails SEND_TO with a summary of any clients whose tests were
+results and then emails your SMTP address with a summary of any clients whose tests were
 positive for one or more drugs.
 
 # Automatic Scheduling

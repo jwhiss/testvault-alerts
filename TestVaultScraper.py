@@ -21,14 +21,15 @@ from selenium.webdriver.common.by import By
 from datetime import datetime
 import time, os, re, requests, csv
 import logging
-import pytesseract #for scanned PDFs
-from pdf2image import convert_from_path # for scanned PDFs
-from dotenv import load_dotenv # for TestVault username/password
-from pdfminer.high_level import extract_pages # for machine-readable PDFs
-from pdfminer.layout import LTTextContainer # for machine-readable PDFs
+import pytesseract  # for scanned PDFs
+from pdf2image import convert_from_path  # for scanned PDFs
+from pdfminer.high_level import extract_pages  # for machine-readable PDFs
+from pdfminer.layout import LTTextContainer  # for machine-readable PDFs
 from pathlib import Path
 
-# environment setup
+from config import get_appdata_path, get_config_value
+
+# logging setup
 logging.getLogger("pdfminer").setLevel(logging.ERROR)
 
 class Test:
@@ -97,13 +98,12 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
 
     print(f"{TODAY_FORMATTED} {START_FORMATTED}: Running TestVaultScraper.py")
     
-    # load environment variables (TestVault user/pass)
-    load_dotenv(dotenv_path=BASE_DIR / "environment.txt")
-    username = os.getenv("TESTVAULT_USER")
-    password = os.getenv("TESTVAULT_PASS")
-    clients_url = os.getenv("CLIENTS_LIST_URL")
+    # obtain credentials from config
+    username = get_config_value("testvault_user")
+    password = get_config_value("testvault_pass")
+    clients_url = get_config_value("clients_list_url")
     if not (username and password and clients_url):
-        raise RuntimeError("TestVault fields in .env must not be empty")
+        raise RuntimeError("TestVault credentials are missing. Run alertSender first.")
 
     # set directory for PDF downloads
     download_dir = os.path.join(dates_dir, f"{TODAY_FORMATTED}")
@@ -125,8 +125,9 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
     finally:
         # simple check: does the logout button now exist?
         if not driver.find_elements(By.CSS_SELECTOR, "a[href*='/organizations/logout/']"):
-            raise RuntimeError("Testvault login failed – check TESTVAULT_USER "
-                               "and TESTVAULT_PASS in environment file")
+            raise RuntimeError(
+                "Testvault login failed – check testvault credentials in config.json"
+            )
     
     # Transfer cookie to stay logged in for PDF download:
     sess = requests.Session()

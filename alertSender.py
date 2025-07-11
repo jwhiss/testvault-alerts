@@ -14,19 +14,22 @@ PARTICULAR PURPOSE.  See the GNU Affero General Public License for more details.
 You should have received a copy of the GNU Affero General Public License along
 with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-import json
 import os
 import smtplib
 import argparse
 import logging
 import sys
-import platform
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from datetime import datetime
 from email.message import EmailMessage
-from dotenv import load_dotenv # for SMTP username/password
 from pathlib import Path
+
+from config import (
+    get_appdata_path,
+    get_config_value,
+    set_config_value,
+)
 
 import TestVaultScraper
 
@@ -88,46 +91,47 @@ def prompt_for_download_dir():
     root.destroy()
     return folder or None
 
-def get_config_value(key):
-    """
-    Returns the value with the given key from CONFIG_PATH, or None if the pair does not exist
-    :param key: str, the key to look for
-    """
-    if CONFIG_PATH.exists():
-        try:
-            with open(CONFIG_PATH, 'r') as f:
-                return json.load(f).get(key)
-        except Exception:
-            pass
-    return None
 
-def set_config_value(key, value):
-    """
-    Sets the given key to the given value in CONFIG_PATH
-    :param key: str, key to set in CONFIG_PATH
-    :param value: str, value to be matched with the given key
-    """
-    CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(CONFIG_PATH, 'w') as f:
-        json.dump({key: value}, f)
+def prompt_for_credentials():
+    """Show a Tkinter form asking for required credentials."""
+    root = tk.Tk()
+    root.title("TestVault Alerts Setup")
+    fields = [
+        ("SMTP Email", "smtp_user"),
+        ("SMTP Password", "smtp_pass"),
+        ("TestVault Email", "testvault_user"),
+        ("TestVault Password", "testvault_pass"),
+        ("Clients List URL", "clients_list_url"),
+    ]
+    entries = {}
+    for i, (label, key) in enumerate(fields):
+        tk.Label(root, text=label).grid(row=i, column=0, padx=5, pady=2, sticky="e")
+        show = "*" if "Password" in label else None
+        entry = tk.Entry(root, width=40, show=show)
+        entry.grid(row=i, column=1, padx=5, pady=2)
+        entries[key] = entry
 
-def get_appdata_path():
-    """
-    Returns the path to the configuration file based on standards for the current platform
-    :return:
-    """
-    system = platform.system()
-    if system == "Windows":
-        base = Path(os.getenv("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
-    elif system == "Darwin":  # macOS
-        base = Path.home() / "Library" / "Application Support"
-    else:  # Linux and everything else
-        base = Path.home() / ".config"
+    def submit():
+        for k, e in entries.items():
+            set_config_value(k, e.get().strip())
+        root.destroy()
 
-    return base / "testvault-alerts"
+    tk.Button(root, text="Save", command=submit).grid(row=len(fields), column=0, columnspan=2, pady=10)
+    root.mainloop()
 
-# set config file path
-CONFIG_PATH = get_appdata_path() / "config.json"
+
+def get_credentials():
+    keys = [
+        "smtp_user",
+        "smtp_pass",
+        "testvault_user",
+        "testvault_pass",
+        "clients_list_url",
+    ]
+    if not all(get_config_value(k) for k in keys):
+        prompt_for_credentials()
+    return {k: get_config_value(k) for k in keys}
+
         
 def main():
     # constants
@@ -149,23 +153,18 @@ def main():
     download_dir = get_download_dir()
     results_dir = f"{download_dir}/{TODAY_FORMATTED}"
     
-    # download new results and store directories
+    # ensure credentials exist and download new results
+    creds = get_credentials()
     new_results = TestVaultScraper.download_results(download_dir, get_appdata_path())
 
     if new_results:
-        # email info from .env
-        load_dotenv(BASE_DIR / "environment.txt")
         smtp_server = "smtp.gmail.com"
         port = 465
-        username = os.getenv("SMTP_USER")
+        username = creds["smtp_user"]
         if "@" not in username:
-            raise ValueError("Sender e-mail is not a valid e-mail address - "
-                             "check SMTP_USER field in environment file")
-        password = os.getenv("SMTP_PASS")
-        send_to = os.getenv("SEND_TO", username)
-        if "@" not in send_to:
-            raise ValueError("Receiver e-mail is not a valid e-mail address - "
-                             "check SEND_TO field in environment file")
+            raise ValueError("Sender e-mail is not a valid e-mail address")
+        password = creds["smtp_pass"]
+        send_to = username
         subject = "New UA Results Alert"
     
         # 1) find any positives
