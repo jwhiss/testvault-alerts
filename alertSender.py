@@ -97,7 +97,7 @@ def prompt_for_credentials():
     root.title("TestVault Alerts Setup")
     subtitle = tk.Label(root, text="Credentials are stored on your device and only sent to "
                                    "TestVault and SMTP servers.\nFields marked with '*' are required. "
-                                   "SMTP (email login) fields are necessary for alert functions.")
+                                   "SMTP (email login) fields are necessary for alert functionality.")
     subtitle.grid(row=0, columnspan=2, padx=5, pady=2, sticky="e")
     fields = [
         ("TestVault Email *", "testvault_user"),
