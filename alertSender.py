@@ -138,7 +138,7 @@ def prompt_for_credentials():
     # Remember settings checkbox
     remember_var = tk.BooleanVar(value=True)
     remember_check = tk.Checkbutton(
-        root, text="Remember these settings", variable=remember_var)
+        root, text="Remember these settings and don't ask again", variable=remember_var)
     remember_check.grid(row=len(entries)+2, columnspan=2, pady=(10, 0))
     entries["remember"] = remember_var
 
