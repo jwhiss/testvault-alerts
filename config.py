@@ -34,10 +34,16 @@ def _write_config(data: dict):
 
 
 def get_config_value(key: str):
+    """Returns the value with the given key from CONFIG_PATH, or default if the key does not exist"""
     return _read_config().get(key)
 
 
 def set_config_value(key: str, value):
+    """
+    Sets the given key to the given value in CONFIG_PATH
+    :param key: str, key to set in CONFIG_PATH
+    :param value: str, value to be matched with the given key
+    """
     data = _read_config()
     data[key] = value
     _write_config(data)
