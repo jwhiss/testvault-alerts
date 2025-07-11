@@ -91,7 +91,7 @@ def prompt_for_download_dir():
     root.destroy()
     return folder or None
 
-
+#TODO add optional username field in popup
 def prompt_for_credentials():
     """Show a Tkinter form asking for required credentials."""
     root = tk.Tk()
@@ -157,7 +157,7 @@ def main():
         smtp_server = "smtp.gmail.com"
         port = 465
         username = creds["smtp_user"]
-        if "@" not in username:
+        if "@" not in username: #TODO allow use without email
             raise ValueError("Sender e-mail is not a valid e-mail address")
         password = creds["smtp_pass"]
         send_to = username
