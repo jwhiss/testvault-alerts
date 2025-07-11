@@ -27,7 +27,7 @@ from pathlib import Path
 from config import (
     get_appdata_path,
     get_config_value,
-    set_config_value, CONFIG_PATH,
+    set_config_value, CONFIG_PATH, read_config,
 )
 
 import TestVaultScraper
@@ -133,17 +133,14 @@ def prompt_for_credentials():
 
 
 def get_credentials():
-    keys = [
-        "smtp_user",
-        "smtp_pass",
+    required = [
         "testvault_user",
         "testvault_pass",
         "clients_list_url",
-        "remember",
     ]
-    if not all(get_config_value(k) for k in keys):
+    if not all(get_config_value(k) for k in required):
         prompt_for_credentials()
-    return {k: get_config_value(k) for k in keys}
+    return read_config()
 
         
 def main():
@@ -169,10 +166,10 @@ def main():
     if new_results:
         smtp_server = "smtp.gmail.com"
         port = 465
-        username = creds["smtp_user"]
+        username = creds.get("smtp_user")
         if "@" not in username: #TODO allow use without email
             raise ValueError("Sender e-mail is not a valid e-mail address")
-        password = creds["smtp_pass"]
+        password = creds.get("smtp_pass")
         send_to = username
         subject = "New UA Results Alert"
     
