@@ -99,6 +99,8 @@ def prompt_for_credentials():
                                    "TestVault and SMTP servers.\nFields marked with '*' are required. "
                                    "SMTP (email login) fields are necessary for alert functionality.")
     subtitle.grid(row=0, columnspan=2, padx=5, pady=2, sticky="e")
+
+    # credential fields
     fields = [
         ("TestVault Email *", "testvault_user"),
         ("TestVault Password *", "testvault_pass"),
@@ -114,12 +116,19 @@ def prompt_for_credentials():
         entry.grid(row=i+2, column=1, padx=5, pady=2)
         entries[key] = entry
 
+    # Remember settings checkbox
+    remember_var = tk.BooleanVar(value=True)
+    remember_check = tk.Checkbutton(
+        root, text="Remember these settings", variable=remember_var)
+    remember_check.grid(row=len(entries)+2, columnspan=2, pady=(10, 0))
+    entries["remember"] = remember_var
+
     def submit():
         for k, e in entries.items():
-            set_config_value(k, e.get().strip())
+            set_config_value(k, e.get())
         root.destroy()
 
-    tk.Button(root, text="Save", command=submit).grid(row=len(fields)+2, column=0, columnspan=2, pady=10)
+    tk.Button(root, text="Save", command=submit).grid(row=len(entries)+2, column=0, columnspan=2, pady=10)
     root.mainloop()
 
 
@@ -130,6 +139,7 @@ def get_credentials():
         "testvault_user",
         "testvault_pass",
         "clients_list_url",
+        "remember",
     ]
     if not all(get_config_value(k) for k in keys):
         prompt_for_credentials()
