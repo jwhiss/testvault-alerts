@@ -17,7 +17,7 @@ will appear containing the `testvault-alert-sender` executable.
    your SMTP credentials, TestVault credentials and the clients list URL. The values are saved
    to `config.json` in your user configuration directory.
 2. A file picker will then ask where downloaded PDFs should be saved. The location is remembered for
-   future runs. Run the executable from the command line with the `--reset-config` flag to choose a new folder.
+   future runs. Run the executable from the command line with the `--reset-config` flag to run with setup prompts again.
 
 # Configuration
 
