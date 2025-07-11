@@ -95,19 +95,21 @@ def prompt_for_credentials():
     """Show a Tkinter form asking for required credentials."""
     root = tk.Tk()
     root.title("TestVault Alerts Setup")
+    subtitle = tk.Label(root, text="Credentials are stored on your device and only sent to TestVault and SMTP servers.")
+    subtitle.grid(row=0, columnspan=2, padx=5, pady=2, sticky="e")
     fields = [
-        ("SMTP Email", "smtp_user"),
-        ("SMTP Password", "smtp_pass"),
+        ("Send-from Email", "smtp_user"),
+        ("Send-from Password", "smtp_pass"),
         ("TestVault Email", "testvault_user"),
         ("TestVault Password", "testvault_pass"),
         ("Clients List URL", "clients_list_url"),
     ]
     entries = {}
     for i, (label, key) in enumerate(fields):
-        tk.Label(root, text=label).grid(row=i, column=0, padx=5, pady=2, sticky="e")
+        tk.Label(root, text=label).grid(row=i+1, column=0, padx=5, pady=2, sticky="e")
         show = "*" if "Password" in label else None
         entry = tk.Entry(root, width=40, show=show)
-        entry.grid(row=i, column=1, padx=5, pady=2)
+        entry.grid(row=i+1, column=1, padx=5, pady=2)
         entries[key] = entry
 
     def submit():
@@ -115,7 +117,7 @@ def prompt_for_credentials():
             set_config_value(k, e.get().strip())
         root.destroy()
 
-    tk.Button(root, text="Save", command=submit).grid(row=len(fields), column=0, columnspan=2, pady=10)
+    tk.Button(root, text="Save", command=submit).grid(row=len(fields)+1, column=0, columnspan=2, pady=10)
     root.mainloop()
 
 
