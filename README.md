@@ -46,7 +46,7 @@ with this program. For gmail, you can create an app password here: https://myacc
 
 Before running or building the project ensure these system packages are installed:
 
-- **Python** – Necessary for compiling and running the program
+- **Python** – Necessary for compiling and running the program. Tkinter must be included with your python distribution.
 - **Tesseract OCR** – used to read scanned PDFs.
 - **Poppler** – `pdf2image` requires Poppler to convert PDFs to images.
 - **Google Chrome** and **ChromeDriver** – Selenium controls Chrome to download results.
