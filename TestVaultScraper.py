@@ -108,6 +108,9 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
     # set up headless Chrome
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
+    options.add_argument("--disable-gpu")            # bypass GPU bits
+    options.add_argument("--no-sandbox")             # skip the Chrome sandbox
+    options.add_argument("--disable-dev-shm-usage")  # avoid shared-memory errors
     driver = webdriver.Chrome(options)
     
     # log in
