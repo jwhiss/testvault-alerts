@@ -120,7 +120,7 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
         driver.find_element(By.ID, "id_email").send_keys(username)
         driver.find_element(By.ID, "id_password").send_keys(password)
         driver.find_element(By.CLASS_NAME, "btn").click()
-        time.sleep(2)  # wait for redirect
+        time.sleep(1.5)  # wait for redirect
     except:
         print("Already logged in (or failed)")
     finally:
