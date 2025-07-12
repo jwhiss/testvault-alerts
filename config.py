@@ -1,3 +1,7 @@
+"""
+config.py: helper functions for storing and accessing application data in a json file
+Copyright (C) 2025 Joel Whissel (JoelJWhissel@gmail.com)
+"""
 import json
 import os
 import platform
