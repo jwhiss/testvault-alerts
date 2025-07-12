@@ -103,7 +103,8 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
     password = get_config_value("testvault_pass")
     clients_url = get_config_value("clients_list_url")
     if not (username and password and clients_url):
-        raise RuntimeError("TestVault credentials are missing. Run alertSender first.")
+        raise RuntimeError("TestVault credentials are missing. Run alertSender and input "
+                           "TestVault email, password, and clients list URL.")
 
     # set directory for PDF downloads
     download_dir = os.path.join(dates_dir, f"{TODAY_FORMATTED}")
