@@ -58,8 +58,7 @@ class Test:
     def is_positive(self, keyword="above", min_chars=500):
         """Check if the PDF at pdf_path contains the keyword.
         Try extract_text and if len > min_chars, check for 'keyword'.
-        Else convert each page of pdf_path into an image, OCR it with 
-        Tesseract, and return True if 'keyword' is found.
+        Else print that PDF could not be read
         """
         found = False
         method = "Miner"
