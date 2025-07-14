@@ -21,8 +21,6 @@ from selenium.webdriver.common.by import By
 from datetime import datetime
 import time, os, re, requests, csv
 import logging
-import pytesseract  # for scanned PDFs
-from pdf2image import convert_from_path  # for scanned PDFs
 from pdfminer.high_level import extract_pages  # for machine-readable PDFs
 from pdfminer.layout import LTTextContainer  # for machine-readable PDFs
 from pathlib import Path
@@ -72,15 +70,7 @@ class Test:
                 print(f"{method} → Found “{keyword}” in "
                       + os.path.basename(self.pdf_path))
         else: # backup: use OCR
-            method = "OCR  "
-            pages = convert_from_path(self.pdf_path, dpi=300)
-            for img in pages:
-                text = pytesseract.image_to_string(img)
-                if keyword.lower() in text.lower():
-                    found = True
-                    print(f"{method} → Found “{keyword}” in "
-                          + os.path.basename(self.pdf_path))
-                    break # untested change from 'continue'
+            print(f"Could not read {os.path.basename(self.pdf_path)} - check manually")
         if not found:
             print(f"{method} — No “{keyword}” in {os.path.basename(self.pdf_path)}")
         return found
