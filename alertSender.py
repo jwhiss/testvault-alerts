@@ -40,17 +40,17 @@ def create_email(new_results, positives, unreadables, results_dir):
     body = (f"Found {len(new_results)} new results.\n"
             + f"New results for:\n{results_string(new_results)}\n")
 
-    if unreadables:
-        subject = "New UA Results Alert - Unreadable results"
-        body += (
-                "The following clients have UNREADABLE UA results:\n"
-                + f"{results_string(unreadables)}\n"
-        )
     if positives:
         subject = "New UA Results Alert - ⚠️ Positive UA"
         body += (
                 "The following clients have POSITIVE UA results:\n"
                 + f"{results_string(positives)}\n"
+        )
+    if unreadables:
+        if not positives: subject = "New UA Results Alert - Unreadable results"
+        body += (
+                "The following clients have UNREADABLE UA results:\n"
+                + f"{results_string(unreadables)}\n"
         )
     if not (positives or unreadables):
         subject = "New UA Results Alert - All Negative"
