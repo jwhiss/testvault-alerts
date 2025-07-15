@@ -70,6 +70,7 @@ class Test:
                       + os.path.basename(self.pdf_path))
         else: # backup: use OCR
             print(f"Could not read {os.path.basename(self.pdf_path)} - check manually")
+            return None
         if not found:
             print(f"{method} — No “{keyword}” in {os.path.basename(self.pdf_path)}")
         return found
