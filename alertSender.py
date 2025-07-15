@@ -36,23 +36,28 @@ import TestVaultScraper
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(levelname)s: %(message)s')
 
-def create_email(new_results, positives, results_dir):
+def create_email(new_results, positives, unreadables, results_dir):
     body = (f"Found {len(new_results)} new results.\n"
             + f"New results for:\n{results_string(new_results)}\n")
 
+    if unreadables:
+        subject = "New UA Results Alert - Unreadable results"
+        body += (
+                "The following clients have UNREADABLE UA results:\n"
+                + f"{results_string(unreadables)}\n"
+        )
     if positives:
         subject = "New UA Results Alert - ⚠️ Positive UA"
         body += (
                 "The following clients have POSITIVE UA results:\n"
                 + f"{results_string(positives)}\n"
-                + f"\nCheck {results_dir} for details."
         )
-    else:
+    if not (positives or unreadables):
         subject = "New UA Results Alert - All Negative"
         body += (
-                "All results are negative."
-                + f"\n\nCheck {results_dir} for details."
+                "All results are negative.\n"
         )
+    body += f"\nCheck {results_dir} for details."
     return subject, body
 
 def send_email(smtp_server, port, username, password, recipient, subject, body):
@@ -184,9 +189,13 @@ def main():
     if new_results:
         # check for PDFs with positive results
         positives = set()
+        unreadables = set()
         for result in new_results:
-            if result.is_positive():
+            is_positive = result.is_positive()
+            if is_positive:
                 positives.add(result)
+            elif is_positive is None:
+                unreadables.add(result)
 
 
         if creds.get("smtp_user") and creds.get("smtp_pass"):
@@ -197,7 +206,7 @@ def main():
                 raise ValueError("Sender e-mail is not a valid e-mail address")
             password = creds.get("smtp_pass")
             send_to = username
-            subject, body = create_email(new_results, positives, results_dir)
+            subject, body = create_email(new_results, positives, unreadables, results_dir)
 
             send_email(smtp_server, port, username, password, send_to, subject, body)
             print(f"Sent email to {send_to} reporting {len(new_results)} new results\n")
