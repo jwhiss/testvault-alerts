@@ -1,6 +1,6 @@
 # TestVault Alerts
 
-This repository scrapes drug test results from thetestvault.com and can alert via email when new results are available, 
+This repository gets drug test results from thetestvault.com and can alert via email when new results are available, 
 including a list of clients for whom one or more individual drugs were present. It relies on Selenium, OCR utilities and 
 other third‑party tools.
 
