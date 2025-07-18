@@ -10,17 +10,24 @@ in the background.
 
 # Plug-and-Play Setup
 ## MacOS
-Download `MacExecutable.zip` from this repository and unzip it. A `TestVault Alert Sender` folder
-will appear containing the `testvault-alerts` executable.
-
-1. Double click `testvault-alerts` to run. 
-2. A file picker will then ask where downloaded PDFs should be saved. The location is remembered for
-   future runs. Run the executable from the command line with the `--reset-config` flag to run with setup prompts again. 
-3. Another window will ask for your TestVault credentials, SMTP (email) credentials, and the clients list URL. These 
-   credentials never leave your device, except when sent to TestVault or SMTP servers. 
+Download `MacExecutable.zip` from this repository and unzip it by double-clicking on the file. A `TestVault Alert Sender` 
+folder will appear containing the `testvault-alerts` executable, a `README.md` file containing these instructions, an 
+`_internal` folder which must stay in the same folder as the executable, and the license for modifying and distributing 
+this program.
 
 ## Windows
-Plug-and-play setup is not yet available for Windows devices. Use the "Manual Setup" steps below.
+Download `WindowsExecutable.zip` from this repository and unzip it by right-clicking on it and selecting "Extract All". 
+A `TestVault Alert Sender` folder will appear containing the `testvault-alerts.exe` executable, a `README.md` file 
+containing these instructions, an `_internal` folder which must stay in the same folder as the executable, and the 
+license for modifying and distributing this program.
+
+## Running testvault-alerts
+1. Double click `testvault-alerts` executable to run.
+2. A file picker will then ask where downloaded PDFs should be saved. The location is remembered for
+   future runs. Run the executable from the command line with the `--reset-config` flag to run with setup prompts again.
+3. Another window will ask for your TestVault credentials, SMTP (email) credentials, and the clients list URL. Select 
+   "Remember these settings and don't ask again" to save the credentials to a locally-stored configuration file. These
+   credentials never leave your device, except when sent to TestVault or SMTP servers.
 
 # Configuration
 
