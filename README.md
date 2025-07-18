@@ -82,7 +82,9 @@ Use the `--reset-config` flag to choose a new folder.
 
 When alertSender.py is run it downloads new results, checks each PDF for positive
 results and then emails your SMTP address with a summary of any clients whose tests were
-positive for one or more drugs.
+positive for one or more drugs. By default, the `is_positive()` function in TestVaultScraper.py checks for "reportable" or 
+"above" in the given PDF to determine if a test is positive. The function accepts a set of keywords as an argument, so 
+if your testing provider uses different phrasing to indicate a positive result you can override the default argument. 
 
 # Automatic Scheduling
 I suggest using launchd (on macOS) or Task Scheduler (on Windows) to run alertSender.py at scheduled times or intervals.
