@@ -21,8 +21,6 @@ from selenium.webdriver.common.by import By
 from datetime import datetime
 import time, os, re, requests, csv
 import logging
-import pytesseract  # for scanned PDFs
-from pdf2image import convert_from_path  # for scanned PDFs
 from pdfminer.high_level import extract_pages  # for machine-readable PDFs
 from pdfminer.layout import LTTextContainer  # for machine-readable PDFs
 from pathlib import Path
@@ -57,32 +55,25 @@ class Test:
             full_text.append("".join(page_text))
         return "\n".join(full_text)
 
-    def is_positive(self, keyword="above", min_chars=500):
-        """Check if the PDF at pdf_path contains the keyword.
-        Try extract_text and if len > min_chars, check for 'keyword'.
-        Else convert each page of pdf_path into an image, OCR it with 
-        Tesseract, and return True if 'keyword' is found.
+    def is_positive(self, keywords=("reportable","above"), min_chars=500):
+        """Check if the PDF at pdf_path contains any of the keywords.
+        Try extract_text and if len > min_chars, check for each keyword.
+        Else print that PDF could not be read
         """
+        pdf_name = os.path.basename(self.pdf_path)
         found = False
         method = "Miner"
         mined_text = self.extract_text()
         if len(mined_text.strip()) > min_chars: # PDF is machine-readable
-            if keyword in mined_text.lower():
-                found = True
-                print(f"{method} → Found “{keyword}” in "
-                      + os.path.basename(self.pdf_path))
-        else: # backup: use OCR
-            method = "OCR  "
-            pages = convert_from_path(self.pdf_path, dpi=300)
-            for img in pages:
-                text = pytesseract.image_to_string(img)
-                if keyword.lower() in text.lower():
+            for key in keywords:
+                if key in mined_text.lower():
                     found = True
-                    print(f"{method} → Found “{keyword}” in "
-                          + os.path.basename(self.pdf_path))
-                    break # untested change from 'continue'
+                    print(f"{method} → Found “{key}” in {pdf_name}")
+        else:
+            print(f"Could not read {pdf_name} - check manually")
+            return None
         if not found:
-            print(f"{method} — No “{keyword}” in {os.path.basename(self.pdf_path)}")
+            print(f"{method} — No {keywords} in {pdf_name}")
         return found
 
 def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
@@ -108,6 +99,9 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
     # set up headless Chrome
     options = webdriver.ChromeOptions()
     options.add_argument("--headless")
+    options.add_argument("--disable-gpu")            # bypass GPU bits
+    options.add_argument("--no-sandbox")             # skip the Chrome sandbox
+    options.add_argument("--disable-dev-shm-usage")  # avoid shared-memory errors
     driver = webdriver.Chrome(options)
     
     # log in
