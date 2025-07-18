@@ -55,24 +55,25 @@ class Test:
             full_text.append("".join(page_text))
         return "\n".join(full_text)
 
-    def is_positive(self, keyword="above", min_chars=500):
-        """Check if the PDF at pdf_path contains the keyword.
-        Try extract_text and if len > min_chars, check for 'keyword'.
+    def is_positive(self, keywords=("reportable","above"), min_chars=500):
+        """Check if the PDF at pdf_path contains any of the keywords.
+        Try extract_text and if len > min_chars, check for each keyword.
         Else print that PDF could not be read
         """
+        pdf_name = os.path.basename(self.pdf_path)
         found = False
         method = "Miner"
         mined_text = self.extract_text()
         if len(mined_text.strip()) > min_chars: # PDF is machine-readable
-            if keyword in mined_text.lower():
-                found = True
-                print(f"{method} → Found “{keyword}” in "
-                      + os.path.basename(self.pdf_path))
-        else: # backup: use OCR
-            print(f"Could not read {os.path.basename(self.pdf_path)} - check manually")
+            for key in keywords:
+                if key in mined_text.lower():
+                    found = True
+                    print(f"{method} → Found “{key}” in {pdf_name}")
+        else:
+            print(f"Could not read {pdf_name} - check manually")
             return None
         if not found:
-            print(f"{method} — No “{keyword}” in {os.path.basename(self.pdf_path)}")
+            print(f"{method} — No {keywords} in {pdf_name}")
         return found
 
 def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
