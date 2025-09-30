@@ -66,7 +66,7 @@ class Test:
         mined_text = self.extract_text()
         if len(mined_text.strip()) > min_chars: # PDF is machine-readable
             for key in keywords:
-                if key.lower() in mined_text.lower():
+                if key in mined_text:
                     found = True
                     print(f"{method} → Found “{key}” in {pdf_name}")
         else:
