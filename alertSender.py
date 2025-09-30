@@ -193,7 +193,7 @@ def main():
         unreadables = set()
         opt_keyword = creds.get("keyword")
         for result in new_results:
-            if opt_keyword != "": # TODO check other optional fields
+            if opt_keyword:
                 is_positive = result.is_positive((opt_keyword,))
             else:
                 is_positive = result.is_positive()
