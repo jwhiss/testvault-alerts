@@ -55,7 +55,7 @@ class Test:
             full_text.append("".join(page_text))
         return "\n".join(full_text)
 
-    def is_positive(self, keywords=("reportable","above"), min_chars=500):
+    def is_positive(self, keywords=("reportable","above","inconsistent"), min_chars=500):
         """Check if the PDF at pdf_path contains any of the keywords.
         Try extract_text and if len > min_chars, check for each keyword.
         Else print that PDF could not be read
