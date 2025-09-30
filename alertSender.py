@@ -131,6 +131,7 @@ def prompt_for_credentials():
         ("Clients List URL *", "clients_list_url"),
         ("SMTP Email", "smtp_user"),
         ("SMTP Password", "smtp_pass"),
+        ("Test positive keyword (optional)", "keyword")
     ]
     entries = {}
     for i, (label, key) in enumerate(fields):
@@ -190,13 +191,16 @@ def main():
         # check for PDFs with positive results
         positives = set()
         unreadables = set()
+        opt_keyword = creds.get("keyword")
         for result in new_results:
-            is_positive = result.is_positive()
+            if opt_keyword is not "": # TODO check other optional fields
+                is_positive = result.is_positive((opt_keyword,))
+            else:
+                is_positive = result.is_positive()
             if is_positive:
                 positives.add(result)
             elif is_positive is None:
                 unreadables.add(result)
-
 
         if creds.get("smtp_user") and creds.get("smtp_pass"):
             smtp_server = "smtp.gmail.com"
