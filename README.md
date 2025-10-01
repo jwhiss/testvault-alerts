@@ -25,14 +25,14 @@ license for modifying and distributing this program.
 1. Double click `testvault-alerts` executable to run.
 2. A file picker will then ask where downloaded PDFs should be saved. The location is remembered for
    future runs. Run the executable from the command line with the `--reset-config` flag to run with setup prompts again.
-3. Another window will ask for your TestVault credentials, SMTP (email) credentials, and the clients list URL. Select 
-   "Remember these settings and don't ask again" to save the credentials to a locally-stored configuration file. These
-   credentials never leave your device, except when sent to TestVault or SMTP servers.
+3. Another window will ask for your TestVault credentials, SMTP (email) credentials, and the clients list URL (see 
+"Configuration"). Select "Remember these settings and don't ask again" to save the credentials to a locally-stored 
+configuration file. These credentials never leave your device, except when sent to TestVault or SMTP servers.
 
 # Configuration
 
-On first launch a small window requests your SMTP email, SMTP password, TestVault email, TestVault password and the 
-clients list URL. 
+On first launch a small window requests your SMTP email, SMTP password, TestVault email, TestVault password, the 
+clients list URL, and an optional keyword.
 
 The three TestVault fields are required, while the two SMTP (email credential) fields are optional but highly recommended 
 as they enable the email alert functionality. Without SMTP credentials, PDFs of new results will still be downloaded but 
@@ -42,6 +42,11 @@ The "Clients List URL" field is required to access the TestVault website and ret
 1. Log in to TestVault and click on the "Groups" tab near the top of the page.
 2. Click on your company or house name
 3. Copy the URL of the current page and paste it into the configuration popup window
+
+The optional "Keyword" field allows you to set a custom keyword for the program to use when checking PDF results for 
+positive tests. By default, the presence of "above", "reportable", or "Inconsistent Result" in a PDF will count that PDF 
+as a positive result. To override the default keywords, type one keyword into the field. This keyword must be present only 
+in PDFs with positive results. The keyword is case-sensitive. 
 
 Credentials are saved to `config.json` in a platform‑appropriate application data directory, and remembered as long as 
 "Remember these settings and don't ask again" is checked. To get this configuration window again, either don't check the 
