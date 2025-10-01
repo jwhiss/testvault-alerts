@@ -17,3 +17,4 @@ priorTests.csv
 build/
 dist/
 *.spec
+/MakeExecutables.sh
