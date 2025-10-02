@@ -67,14 +67,13 @@ Before running or building the project ensure these system packages are installe
 - **Python** – Necessary for compiling and running the program. Tkinter must be included with your python distribution.
 - **Google Chrome** and **ChromeDriver** – Selenium controls Chrome to download results.
 
-Packages can usually be installed from your system package manager. For example, on macOS using Homebrew:
+To read PDF results with optical character recognition, use the files from the `include-OCR` branch. This branch uses Tesseract
+and Poppler to convert and analyze PDFs. Packages can usually be installed from your system package manager. For example, on 
+macOS using Homebrew:
 ```bash
 brew install tesseract poppler
 brew install --cask google-chrome chromedriver
 ```
-
-On Windows, download and install the Tesseract, Poppler and Chrome/ChromeDriver packages and ensure their executables 
-are in your `PATH`.
 
 Once you have downloaded this repository and installed python and the above packages, install the specific python 
 packages needed for this program. Navigate to the directory containing the repository, then use pip:
@@ -88,8 +87,8 @@ By design, alertSender.py should be run for full functionality.
 If run individually, TestVaultScraper.py scrapes TestVault for new results and downloads any new results to your Downloads
 folder.
 
-alertSender.py remembers the download folder and credentials you use the first time it runs.
-Use the `--reset-config` flag to choose a new folder. 
+alertSender.py remembers the download folder and credentials you use the first time it runs. Use the `--reset-config` flag 
+to choose a new folder. 
 
 When alertSender.py is run it downloads new results, checks each PDF for positive
 results and then emails your SMTP address with a summary of any clients whose tests were
@@ -98,7 +97,7 @@ positive for one or more drugs. By default, the `is_positive()` function in Test
 if your testing provider uses different phrasing to indicate a positive result you can override the default argument. 
 
 # Automatic Scheduling
-I suggest using launchd (on macOS) or Task Scheduler (on Windows) to run alertSender.py at scheduled times or intervals.
+I suggest using a launch agent (on macOS) or Task Scheduler (on Windows) to run alertSender.py at scheduled times or intervals.
 Allowing alertSender/testvault-alerts to run automatically once or twice a day results in an email notification
 whenever new results are uploaded without any user interaction. Emails also list the chosen download directory and the 
 clients with positive results, expediting the process of checking for concerning results
