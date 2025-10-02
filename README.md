@@ -1,8 +1,7 @@
 # TestVault Alerts
 
 This repository gets drug test results from thetestvault.com and can alert via email when new results are available, 
-including a list of clients for whom one or more individual drugs were present. It relies on Selenium, OCR utilities and 
-other third‑party tools.
+including a list of clients for whom one or more individual drugs were present. 
 
 The first time this program runs, it will likely take 5 to 10 minutes to download and search through all results. If run
 regularly (see "Automatic Scheduling" below), each run will usually take less than a minute. The program can always run 
