@@ -25,6 +25,9 @@ from pdfminer.high_level import extract_pages  # for machine-readable PDFs
 from pdfminer.layout import LTTextContainer  # for machine-readable PDFs
 from pathlib import Path
 
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
+
 from config import get_appdata_path, get_config_value
 
 # logging setup
@@ -111,15 +114,12 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
             driver.find_element(By.ID, "id_email").send_keys(username)
             driver.find_element(By.ID, "id_password").send_keys(password)
             driver.find_element(By.CLASS_NAME, "btn").click()
-            time.sleep(1.5)  # wait for redirect
+            WebDriverWait(driver, 5).until(ec.presence_of_element_located(
+                (By.CSS_SELECTOR, "a[href*='/organizations/logout/']")))
         except:
-            print("Already logged in (or failed)")
-        finally:
-            # simple check: does the logout button now exist?
-            if not driver.find_elements(By.CSS_SELECTOR, "a[href*='/organizations/logout/']"):
-                raise RuntimeError(
-                    "Testvault login failed – check testvault credentials in config.json"
-                )
+            raise RuntimeError(
+                "Testvault login failed – check testvault credentials in config.json"
+            )
 
         # Transfer cookie to stay logged in for PDF download:
         sess = requests.Session()
