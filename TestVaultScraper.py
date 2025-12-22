@@ -210,7 +210,7 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
 
                         # write out the PDF
                         with open(pdf_path, "wb") as f:
-                            for chunk in resp.iter_content(1024):
+                            for chunk in resp.iter_content(64*1024):
                                 f.write(chunk)
                         print(f"{test_date_formatted} (new)", end=", ")
                         new_results.add(Test(pdf_path, full_name, test_date_formatted,
