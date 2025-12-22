@@ -124,20 +124,33 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
     sess = requests.Session()
     for c in driver.get_cookies():
         sess.cookies.set(c['name'], c['value'])
-    
-    # grab all links that point to a client document page and regex out  ID, get text fields
+
     clients = {} # id -> [last, first]
-    for element in driver.find_elements(By.CSS_SELECTOR, "a[href*='person/update/']"):
-        client_url = element.get_attribute("href")
-        m = re.search(r"/person/update/(\d+)/", client_url)
-        
-        if not m:
-            continue
-        cid = m.group(1)
-        text = element.text.strip()
-        if text.lower() == "edit" or "":
-            continue
-        clients.setdefault(cid, []).append(text)
+    mini_driver = webdriver.Chrome(options) # separate driver for client pages
+    mini_driver.get(driver.current_url)
+    for c in driver.get_cookies():
+        mini_driver.add_cookie(c)
+
+    # grab all links that point to a client document page and regex out  ID, get text fields
+    for element in driver.find_elements(By.CSS_SELECTOR, "a[href*='person/list/']"):
+        company_url = element.get_attribute("href")
+        name = element.text.strip()
+        names = name.split(" ")
+
+        mini_driver.get(company_url)
+        # get ID for each client
+        for item in mini_driver.find_elements(By.CSS_SELECTOR, "a[href*='person/update/']"):
+            client_url = item.get_attribute("href")
+            m = re.search(r"/person/update/(\d+)", client_url)
+            if not m:
+                continue
+            text = item.text.strip()
+            if text.lower() == "my account":
+                continue
+            cid = m.group(1)
+            clients.setdefault(cid, []).append(names[1])
+            clients[cid].append(names[0])
+            break
     
     print("Found client IDs:", clients)
     
