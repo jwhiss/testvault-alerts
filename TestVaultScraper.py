@@ -84,148 +84,156 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
     START_FORMATTED = datetime.now().strftime("%H:%M:%S")
 
     print(f"{TODAY_FORMATTED} {START_FORMATTED}: Running TestVaultScraper.py")
-    
-    # obtain credentials from config
-    username = get_config_value("testvault_user")
-    password = get_config_value("testvault_pass")
-    clients_url = get_config_value("clients_list_url")
-    if not (username and password and clients_url):
-        raise RuntimeError("TestVault credentials are missing. Run alertSender and input "
-                           "TestVault email, password, and clients list URL.")
-
-    # set directory for PDF downloads
-    download_dir = os.path.join(dates_dir, f"{TODAY_FORMATTED}")
-
-    # set up headless Chrome
-    options = webdriver.ChromeOptions()
-    options.add_argument("--headless")
-    options.add_argument("--disable-gpu")            # bypass GPU bits
-    options.add_argument("--no-sandbox")             # skip the Chrome sandbox
-    options.add_argument("--disable-dev-shm-usage")  # avoid shared-memory errors
-    driver = webdriver.Chrome(options)
-    
-    # log in
-    driver.get(clients_url)
+    driver = None
     try:
-        driver.find_element(By.ID, "id_email").send_keys(username)
-        driver.find_element(By.ID, "id_password").send_keys(password)
-        driver.find_element(By.CLASS_NAME, "btn").click()
-        time.sleep(1.5)  # wait for redirect
-    except:
-        print("Already logged in (or failed)")
-    finally:
-        # simple check: does the logout button now exist?
-        if not driver.find_elements(By.CSS_SELECTOR, "a[href*='/organizations/logout/']"):
-            raise RuntimeError(
-                "Testvault login failed – check testvault credentials in config.json"
-            )
-    
-    # Transfer cookie to stay logged in for PDF download:
-    sess = requests.Session()
-    for c in driver.get_cookies():
-        sess.cookies.set(c['name'], c['value'])
+        # set up headless Chrome
+        options = webdriver.ChromeOptions()
+        options.add_argument("--headless")
+        options.add_argument("--disable-gpu")            # bypass GPU bits
+        options.add_argument("--no-sandbox")             # skip the Chrome sandbox
+        options.add_argument("--disable-dev-shm-usage")  # avoid shared-memory errors
+        driver = webdriver.Chrome(options=options)
 
-    clients = {} # id -> [last, first]
-    mini_driver = webdriver.Chrome(options) # separate driver for client pages
-    mini_driver.get(driver.current_url)
-    for c in driver.get_cookies():
-        mini_driver.add_cookie(c)
+        # obtain credentials from config
+        username = get_config_value("testvault_user")
+        password = get_config_value("testvault_pass")
+        clients_url = get_config_value("clients_list_url")
+        if not (username and password and clients_url):
+            raise RuntimeError("TestVault credentials are missing. Run alertSender and input "
+                               "TestVault email, password, and clients list URL.")
 
-    # grab all links that point to a client document page and regex out  ID, get text fields
-    for element in driver.find_elements(By.CSS_SELECTOR, "a[href*='person/list/']"):
-        company_url = element.get_attribute("href")
-        name = element.text.strip()
-        names = name.split(" ")
+        # set directory for PDF downloads
+        download_dir = os.path.join(dates_dir, f"{TODAY_FORMATTED}")
 
-        mini_driver.get(company_url)
-        # get ID for each client
-        for item in mini_driver.find_elements(By.CSS_SELECTOR, "a[href*='person/update/']"):
-            client_url = item.get_attribute("href")
-            m = re.search(r"/person/update/(\d+)", client_url)
-            if not m:
-                continue
-            text = item.text.strip()
-            if text.lower() == "my account":
-                continue
-            cid = m.group(1)
-            clients.setdefault(cid, []).append(names[1])
-            clients[cid].append(names[0])
-            break
-    
-    print("Found client IDs:", clients)
-    
-    # Load what’s already been downloaded
-    prior = set()
-    if os.path.exists(PRIORS_CSV):
-        with open(PRIORS_CSV, newline="") as f:
-            reader = csv.reader(f)
-            for row in reader:
-                # row[0] is cid, row[1] is test_date
-                prior.add((row[0], row[1]))
-
-    # determine base URL for client-documents pages
-    m = re.search(r"(.*)/list/$", clients_url)
-    if not m:
-        raise RuntimeError(f"No base URL found in {clients_url}")
-    base_url = m.group(1)
-
-    new_results = set() # create set for new results (Test)
-    for cid, names in clients.items():
-        # 1) navigate to client page
-        driver.get(f"{base_url}/documents/{cid}/")
-        full_name = names[1] + " " + names[0]
-        print(f"Checking results for {full_name}")
+        # log in
+        driver.get(clients_url)
         try:
-            # find PDF elements
-            pdf_links = driver.find_elements(By.CSS_SELECTOR, "a[href*='/documents/download/']")
-            print("Found PDFs for: ", end="")
-            for link in pdf_links:
-                pdf_url = link.get_attribute("href")
-                pdf_title = link.get_attribute("title")
-                m = re.search(r"(\d{8})\.pdf$", pdf_title)
-                if m:
-                    test_date = m.group(1)
-                else:
-                    logging.warning("No date found in %s - skipping", pdf_title)
+            driver.find_element(By.ID, "id_email").send_keys(username)
+            driver.find_element(By.ID, "id_password").send_keys(password)
+            driver.find_element(By.CLASS_NAME, "btn").click()
+            time.sleep(1.5)  # wait for redirect
+        except:
+            print("Already logged in (or failed)")
+        finally:
+            # simple check: does the logout button now exist?
+            if not driver.find_elements(By.CSS_SELECTOR, "a[href*='/organizations/logout/']"):
+                raise RuntimeError(
+                    "Testvault login failed – check testvault credentials in config.json"
+                )
+
+        # Transfer cookie to stay logged in for PDF download:
+        sess = requests.Session()
+        for c in driver.get_cookies():
+            sess.cookies.set(c['name'], c['value'])
+
+        # Snapshot company links now (DOM changes on navigation). Each item is (company_url, displayed_name)
+        company_links = []
+        for element in driver.find_elements(By.CSS_SELECTOR, "a[href*='person/list/']"):
+            href = element.get_attribute("href")
+            text = element.text.strip()
+            if href:
+                company_links.append((href, text))
+
+        clients = {}  # id -> [last, first]
+
+        # grab all links that point to a client document page and regex out ID
+        for company_url, name in company_links:
+            # parse name
+            parts = [p for p in name.split(" ") if p]
+            first = parts[0] if len(parts) >= 1 else ""
+            last = parts[1] if len(parts) >= 2 else ""
+
+            driver.get(company_url)
+
+            # get ID for each client
+            for item in driver.find_elements(By.CSS_SELECTOR, "a[href*='person/update/']"):
+                client_url = item.get_attribute("href")
+                m = re.search(r"/person/update/(\d+)", client_url)
+                if not m:
                     continue
-                test_date_formatted = datetime.strptime(test_date, "%m%d%Y").strftime("%Y-%m-%d") # for collection date folders
-                test_id = (full_name, test_date)
-                
-                # Download new test PDFs and add them to PRIOR_CSV
-                is_new = test_id not in prior
-                if is_new:
-                    
-                    # download PDF file, new dir if none yet
-                    os.makedirs(download_dir, exist_ok=True)
-                    pdf_path = os.path.join(download_dir, f"{names[1] + names[0][0]}"
-                                            + test_date_formatted[4:10] + ".pdf")
-                    resp = sess.get(pdf_url, stream=True)
-                    resp.raise_for_status()
-                    
-                    # write out the PDF
-                    with open(pdf_path, "wb") as f:
-                        for chunk in resp.iter_content(1024):
-                            f.write(chunk)
-                    print(f"{test_date_formatted} (new)", end=", ")
-                    new_results.add(Test(pdf_path, full_name, test_date_formatted,
-                                         TODAY_FORMATTED))
-                    
-                    # then record it:
-                    with open(PRIORS_CSV, "a", newline="") as f:
-                        writer = csv.writer(f)
-                        writer.writerow([full_name, test_date])
-                    prior.add(test_id)
-                else:
-                    print(f"{test_date_formatted} (already recorded, ending search)")
-                    break
-            print(f"Finished checking {len(pdf_links)} PDFs for {full_name}\n")
-        except Exception as e:
-            print(f"No results for {full_name}: {e}\n")
-            
-    driver.quit()
-    print(f"\nFinished checking {len(clients)} clients and downloaded {len(new_results)} new results\n")
-    
-    return new_results
+                text = item.text.strip()
+                if text.lower() == "my account":
+                    continue
+                cid = m.group(1)
+                clients[cid] = [last, first]
+                break
+
+        print("Found client IDs:", clients)
+
+        # load what’s already been downloaded
+        prior = set()
+        if os.path.exists(PRIORS_CSV):
+            with open(PRIORS_CSV, newline="") as f:
+                reader = csv.reader(f)
+                for row in reader:
+                    # row[0] is cid, row[1] is test_date
+                    prior.add((row[0], row[1]))
+
+        # determine base URL for client-documents pages
+        m = re.search(r"(.*)/list/$", clients_url)
+        if not m:
+            raise RuntimeError(f"No base URL found in {clients_url}")
+        base_url = m.group(1)
+
+        new_results = set() # create set for new results (Test)
+        for cid, names in clients.items():
+            # navigate to client page
+            driver.get(f"{base_url}/documents/{cid}/")
+            full_name = names[1] + " " + names[0]
+            print(f"Checking results for {full_name}")
+            try:
+                # find PDF elements
+                pdf_links = driver.find_elements(By.CSS_SELECTOR, "a[href*='/documents/download/']")
+                print("Found PDFs for: ", end="")
+                for link in pdf_links:
+                    pdf_url = link.get_attribute("href")
+                    pdf_title = link.get_attribute("title")
+                    m = re.search(r"(\d{8})\.pdf$", pdf_title)
+                    if m:
+                        test_date = m.group(1)
+                    else:
+                        logging.warning("No date found in %s - skipping", pdf_title)
+                        continue
+                    test_date_formatted = datetime.strptime(test_date, "%m%d%Y").strftime("%Y-%m-%d") # for collection date folders
+                    test_id = (full_name, test_date)
+
+                    # download new test PDFs and add them to PRIOR_CSV
+                    is_new = test_id not in prior
+                    if is_new:
+
+                        # download PDF file, new dir if none yet
+                        os.makedirs(download_dir, exist_ok=True)
+                        pdf_path = os.path.join(download_dir, f"{names[1] + names[0][0]}"
+                                                + test_date_formatted[4:10] + ".pdf")
+                        resp = sess.get(pdf_url, stream=True)
+                        resp.raise_for_status()
+
+                        # write out the PDF
+                        with open(pdf_path, "wb") as f:
+                            for chunk in resp.iter_content(1024):
+                                f.write(chunk)
+                        print(f"{test_date_formatted} (new)", end=", ")
+                        new_results.add(Test(pdf_path, full_name, test_date_formatted,
+                                             TODAY_FORMATTED))
+
+                        # record it:
+                        with open(PRIORS_CSV, "a", newline="") as f:
+                            writer = csv.writer(f)
+                            writer.writerow([full_name, test_date])
+                        prior.add(test_id)
+                    else:
+                        print(f"{test_date_formatted} (already recorded, ending search)")
+                        break
+                print(f"Finished checking {len(pdf_links)} PDFs for {full_name}\n")
+            except Exception as e:
+                print(f"No results for {full_name}: {e}\n")
+
+        print(f"\nFinished checking {len(clients)} clients and downloaded {len(new_results)} new results\n")
+
+        return new_results
+    finally:
+        if driver is not None:
+            driver.quit()
 
 def list_positives(pdfs_dir):
     """
