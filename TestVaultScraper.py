@@ -163,11 +163,11 @@ def download_pdf_to_path(sess, pdf_url, pdf_path, chunk_size=256 * 1024):
             f.write(chunk)
 
 
-def append_prior_test(priors_csv_path, full_name, test_date):
+def append_prior_test(priors_csv_path, client_id, test_date):
     """Append a downloaded test record to the priors CSV."""
     with open(priors_csv_path, "a", newline="") as f:
         writer = csv.writer(f)
-        writer.writerow([full_name, test_date])
+        writer.writerow([client_id, test_date])
 
 
 class Test:
@@ -263,7 +263,7 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
                         continue
 
                     test_date_formatted = datetime.strptime(test_date, "%m%d%Y").strftime("%Y-%m-%d")
-                    test_id = (full_name, test_date)
+                    test_id = (cid, test_date)
 
                     if test_id not in prior:
                         pdf_path = build_pdf_path(
@@ -277,7 +277,7 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
                         print(f"{test_date_formatted} (new)", end=", ")
                         new_results.add(Test(pdf_path, full_name, test_date_formatted, TODAY_FORMATTED))
 
-                        append_prior_test(PRIORS_CSV, full_name, test_date)
+                        append_prior_test(PRIORS_CSV, cid, test_date)
                         prior.add(test_id)
                     else:
                         print(f"{test_date_formatted} (already recorded, ending search)")
