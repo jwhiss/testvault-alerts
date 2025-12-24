@@ -82,12 +82,12 @@ def build_requests_session_from_driver(driver):
 
 def snapshot_company_links(driver):
     """Snapshot organization links before navigation so elements don't stale."""
-    company_links = []
+    company_links = {}
     for element in driver.find_elements(By.CSS_SELECTOR, "a[href*='person/list/']"):
         href = element.get_attribute("href")
         text = element.text.strip()
         if href:
-            company_links.append((href, text))
+            company_links[text] = href
     return company_links
 
 
@@ -102,7 +102,7 @@ def parse_first_last(display_name):
 def collect_client_ids(driver, company_links):
     """Visit each company page and return mapping of client_id -> [last, first]."""
     clients = {}
-    for company_url, name in company_links:
+    for name, company_url in company_links.items():
         first, last = parse_first_last(name)
         driver.get(company_url)
 
@@ -133,7 +133,7 @@ def load_prior_tests(priors_csv_path):
 
 def base_url_from_clients_url(clients_url):
     """Derive the base URL from the clients list URL."""
-    m = re.search(r"(.*)/list/$", clients_url)
+    m = re.search(r"(.*)/person/list/$", clients_url)
     if not m:
         raise RuntimeError(f"No base URL found in {clients_url}")
     return m.group(1)
@@ -240,12 +240,12 @@ def download_results(dates_dir, data_dir=Path(__file__).resolve().parent):
         print("Found client IDs:", clients)
 
         prior = load_prior_tests(PRIORS_CSV)
-        base_url = base_url_from_clients_url(clients_url)
 
         new_results = set()
         for cid, names in clients.items():
-            driver.get(f"{base_url}/documents/{cid}/")
             full_name = names[1] + " " + names[0]
+            base_url = base_url_from_clients_url(company_links[full_name])
+            driver.get(f"{base_url}/person/documents/{cid}/")
             print(f"Checking results for {full_name}")
 
             try:
